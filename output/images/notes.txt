@@ -1,0 +1,27 @@
+Mr.Robot
+----------
+
+1. Let's find the target
+
+
+2. Nmap scan the target
+
+3. Check for command injection
+
+4. Enumerate port 80 on the target
+nmap -p 80 --script http-enum 10.0.0.133
+[img]
+
+	---> find robots.txt
+	[img]
+	
+	---> http://10.0.0.133/fsocity.dic
+	download some kind of dictonary from there
+	
+	---> http://10.0.0.133/key-1-of-3.txt
+	[img]
+5. Nikto on the target
+[img]
+	---> the site is wordpress
+[img] nikto 443
+	---> find readme.html

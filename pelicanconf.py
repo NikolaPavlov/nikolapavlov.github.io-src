@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 AUTHOR = 'me gogo'
-SITENAME = 'Test site'
+SITENAME = 'InfoSec CTF'
 SITEURL = ''
 
 PATH = 'content'
@@ -20,12 +20,14 @@ AUTHOR_FEED_ATOM = None
 AUTHOR_FEED_RSS = None
 
 # Blogroll
-LINKS = (('Pelican', '#'),
-         ('Jinja2', '#'),)
+LINKS = (('vulnhub', 'https://www.vulnhub.com'),
+         ('', '#'),)
 
 # Social widget
-# SOCIAL = (('this is social link', '#'),
-#           ('Another social link', '#'),)
+SOCIAL = (('', ''),
+          ('github', 'https://github.com/NikolaPavlov/'),
+          ('twitter', 'https://twitter.com/n_pavlov1955'),)
+
 
 DEFAULT_PAGINATION = 6
 
@@ -51,7 +53,7 @@ DISPLAY_CATEGORIES_ON_POSTINFO=False
 DISPLAY_AUTHOR_ON_POSTINFO=False
 
 # Display the search form
-DISPLAY_SEARCH_FORM=True
+DISPLAY_SEARCH_FORM=False
 
 # Sort pages list by a given attribute
 # PAGES_SORT_ATTRIBUTE=Title
@@ -63,4 +65,4 @@ GITHUB_URL=None
 LINKS 
 
 # Social widget
-# SOCIAL
+SOCIAL

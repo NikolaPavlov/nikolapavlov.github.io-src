@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
         <meta charset="utf-8" />
-        <title>Test site - me gogo</title>
+        <title>InfoSec CTF - me gogo</title>
         <link rel="stylesheet" href="/theme/css/main.css" />
 
         <!--[if IE]>
@@ -12,24 +12,80 @@
 
 <body id="index" class="home">
         <header id="banner" class="body">
-                <h1><a href="/">Test site </a></h1>
+                <h1><a href="/">InfoSec CTF </a></h1>
                 <nav><ul>
                     <li><a href="/category/ctf.html">CTF</a></li>
-                    <li><a href="/category/review.html">Review</a></li>
                 </ul>
-<form id="search" action"#" onsubmit="javascript:window.open('https://duckduckgo.com/?q='+document.getElementById('keywords').value+'+site:');">
-                        <input id="keywords" type="text" />
-                    </form>
                 </nav>
         </header><!-- /#banner -->
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="/first-post.html">first post</a></h1>
+                    <h1 class="entry-title"><a href="/necromancer.html">Necromancer</a></h1>
 <footer class="post-info">
-        <span>Fri 03 December 2010</span>
+        <span>Thu 14 July 2016</span>
 
-</footer><!-- /.post-info --><p>this is the first post</p>                </article>
+</footer><!-- /.post-info --><p><strong>This is a Necromancer challenge from vulnhub.com. You can obtain the virtual
+machine from: <a href="https://www.vulnhub.com/entry/the-necromancer-1,154/">here</a></strong></p>
+<p>We found our target with:</p>
+<div class="highlight"><pre><span></span>netdiscover -r 10.0.0.1/24
+</pre></div>
+
+
+<p>As usual scan the target:</p>
+<div class="highlight"><pre><span></span>nmap -sS -T5 -Pn -n 10.0.0.137
+</pre></div>
+
+
+<p>Didn't find anything so lets look for all ports:</p>
+<div class="highlight"><pre><span></span>nmap -sS -T5 -Pn -n -p- 10.0.0.137
+</pre></div>
+
+
+<p>There is no open TCP ports on the target. So let's look to the udp:</p>
+<div class="highlight"><pre><span></span>nmap -sU -T5 -Pn -n -p- 10.0.0.137
+</pre></div>
+
+
+<p>Only single 666(doom) Udp port open...</p>
+<p>So i try to connect to port 666 with ncat with no result... At this point i
+stuck a little bit :) but finally decide to listen for trafic from the target.
+Fire up wireshark and start sniffing. Found this interesting packets:
+<img alt="" src="images/Necromancer/0_find_connection_wireshark.png" /></p>
+<p>Lets catch incoming connection with ncat and see what will happen:
+<img alt="" src="images/Necromancer/1_ncat_catch_4444.png" /></p>
+<p>Got some jiberish string... I paste it in my Owasp Zap and able to decode it as
+base 64:
+<img alt="" src="images/Necromancer/2_decrypt_base64.png" /></p>
+<p>The full text is bellow:
+<img alt="" src="images/Necromancer/2_decrypt_base64_txt.png" />
+It's talk about send some string to the 666udp. After a while i ended up send
+decoded flag1 (opensesame) to the Udp 666 on the target:
+<img alt="" src="images/Necromancer/3_send_flag1_to_666.png" /></p>
+<p>This is give as flag2 and said something about close 666 and open 80. So nmap
+confirm port 80 on the target is open it's time to browse the site.
+<img alt="" src="images/Necromancer/3_1_picture_on_site.png" />
+I scan with nikto, looking around with firebug and found nothing interesting. It
+should be something about the picture so i download it and look carefully on it.
+<img alt="" src="images/Necromancer/4_file_picture.png" /></p>
+<p><img alt="" src="images/Necromancer/5_strings_picture.png" /></p>
+<p><img alt="" src="images/Necromancer/5_1_binwalk_picture.png" />
+Looks like there is zip archive in the picture so after unzip the pic we recived
+feathers.txt contained base64 string. Decide to use my universal Zap to decode
+it and there is flag number 3 and some directory:
+<img alt="" src="images/Necromancer/6_decode_flag3_with_zap.png" /></p>
+<p>I explore the recently founded directory, there is a second picture. I examine
+this picture for a long time but unable to find anything in it. At this point i
+stuck big time! Run a lot of scans and fuzzers but unable to find anything. So i
+was force to look of walkthrough of someone to get some type of joker. Quikly i 
+see other dudes able to find talisman file after fuzzed the target. That's 
+strange because I run dirbuster with alot of dictonaries, but that didn't work 
+for me. Look like dirbuster didn't work. So after I already know what to look 
+for I quickly switch to wfuzz using same dictonary as in dirbuster but wfuzz
+found what I searched:
+<img alt="" src="images/Necromancer/7_wfuzz_found_talisman.png" />
+We found talisman :) At first it's look like binary file. Stucked again! So i
+decide to go to sleep and fight tomorrow witch a fresh head.</p>                </article>
             </aside><!-- /#featured -->
                 <section id="content" class="body">
                     <h1>Other articles</h1>
@@ -37,34 +93,23 @@
 
             <li><article class="hentry">
                 <header>
-                    <h1><a href="/my-first-review.html" rel="bookmark"
-                           title="Permalink to My First Review">My First Review</a></h1>
+                    <h1><a href="/mr-robot-ctf.html" rel="bookmark"
+                           title="Permalink to Mr Robot CTF">Mr Robot CTF</a></h1>
                 </header>
 
                 <div class="entry-content">
 <footer class="post-info">
-        <span>Fri 03 December 2010</span>
+        <span>Wed 13 July 2016</span>
 
-</footer><!-- /.post-info -->                <p>Following is a review of my favorite mechanical keyboard.</p>
-<div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;Python syntax highlighting&quot;</span>
-<span class="k">print</span> <span class="n">s</span>
-</pre></div>
-                <a class="readmore" href="/my-first-review.html">read more</a>
-                </div><!-- /.entry-content -->
-            </article></li>
-
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="/this-is-is-the-second-post.html" rel="bookmark"
-                           title="Permalink to this is is the second post">this is is the second post</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <span>Fri 03 December 2010</span>
-
-</footer><!-- /.post-info -->                <p>this is is the second post</p>
-                <a class="readmore" href="/this-is-is-the-second-post.html">read more</a>
+</footer><!-- /.post-info -->                <p><strong>This is a Mr.Robot challenge from vulnhub.com. You can obtain the virtual machine from:
+<a href="https://www.vulnhub.com/entry/mr-robot-1,151/">here</a></strong></p>
+<p>First lets find the target in our network:</p>
+<p><img alt="netdiscover target" src="images/1_netdiscover.png" /></p>
+<p>Our target machine is 10.0.0.135, lets run nmap scan on it:</p>
+<p><img alt="nmap scan target" src="images/2_nmap.png" /></p>
+<p>Nothing interesting just web server, and close ssh port 22.
+Browse ...</p>
+                <a class="readmore" href="/mr-robot-ctf.html">read more</a>
                 </div><!-- /.entry-content -->
             </article></li>
             </ol><!-- /#posts-list -->
@@ -76,10 +121,19 @@
                 <div class="blogroll">
                         <h2>blogroll</h2>
                         <ul>
-                            <li><a href="#">Pelican</a></li>
-                            <li><a href="#">Jinja2</a></li>
+                            <li><a href="https://www.vulnhub.com">vulnhub</a></li>
+                            <li><a href="#"></a></li>
                         </ul>
                 </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href=""></a></li>
+                            <li><a href="https://github.com/NikolaPavlov/">github</a></li>
+                            <li><a href="www.twitter.com/gggg">twitter</a></li>
+                        </ul>
+                </div><!-- /.social -->
         </section><!-- /#extras -->
 
         <footer id="contentinfo" class="body">
