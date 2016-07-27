@@ -15,107 +15,69 @@
                 <h1><a href="/">InfoSec CTF </a></h1>
                 <nav><ul>
                     <li class="active"><a href="/category/ctf.html">CTF</a></li>
+                    <li><a href="/category/vulnhub-ctf.html">VulnHub CTF</a></li>
                 </ul>
                 </nav>
         </header><!-- /#banner -->
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="/necromancer.html">Necromancer</a></h1>
-<footer class="post-info">
-        <span>Thu 14 July 2016</span>
-
-</footer><!-- /.post-info --><p><strong>This is a Necromancer challenge from vulnhub.com. You can obtain the virtual
-machine from: <a href="https://www.vulnhub.com/entry/the-necromancer-1,154/">here</a></strong></p>
-<p>We found our target with:</p>
-<div class="highlight"><pre><span></span>netdiscover -r 10.0.0.1/24
-</pre></div>
-
-
-<p>As usual scan the target:</p>
-<div class="highlight"><pre><span></span>nmap -sS -T5 -Pn -n 10.0.0.137
-</pre></div>
-
-
-<p>Didn't find anything so lets look for all ports:</p>
-<div class="highlight"><pre><span></span>nmap -sS -T5 -Pn -n -p- 10.0.0.137
-</pre></div>
-
-
-<p>There is no open TCP ports on the target. So let's look to the udp:</p>
-<div class="highlight"><pre><span></span>nmap -sU -T5 -Pn -n -p- 10.0.0.137
-</pre></div>
-
-
-<p>Only single 666(doom) Udp port open...</p>
-<p>So i try to connect to port 666 with ncat with no result... At this point i
-stuck a little bit :) but finally decide to listen for trafic from the target.
-Fire up wireshark and start sniffing. Found this interesting packets:
-<img alt="" src="images/Necromancer/0_find_connection_wireshark.png" /></p>
-<p>Lets catch incoming connection with ncat and see what will happen:
-<img alt="" src="images/Necromancer/1_ncat_catch_4444.png" /></p>
-<p>Got some jiberish string... I paste it in my Owasp Zap and able to decode it as
-base 64:
-<img alt="" src="images/Necromancer/2_decrypt_base64.png" /></p>
-<p>The full text is bellow:
-<img alt="" src="images/Necromancer/2_decrypt_base64_txt.png" />
-It's talk about send some string to the 666udp. After a while i ended up send
-decoded flag1 (opensesame) to the Udp 666 on the target:
-<img alt="" src="images/Necromancer/3_send_flag1_to_666.png" /></p>
-<p>This is give as flag2 and said something about close 666 and open 80. So nmap
-confirm port 80 on the target is open it's time to browse the site.
-<img alt="" src="images/Necromancer/3_1_picture_on_site.png" />
-I scan with nikto, looking around with firebug and found nothing interesting. It
-should be something about the picture so i download it and look carefully on it.
-<img alt="" src="images/Necromancer/4_file_picture.png" /></p>
-<p><img alt="" src="images/Necromancer/5_strings_picture.png" /></p>
-<p><img alt="" src="images/Necromancer/5_1_binwalk_picture.png" />
-Looks like there is zip archive in the picture so after unzip the pic we recived
-feathers.txt contained base64 string. Decide to use my universal Zap to decode
-it and there is flag number 3 and some directory:
-<img alt="" src="images/Necromancer/6_decode_flag3_with_zap.png" /></p>
-<p>I explore the recently founded directory, there is a second picture. I examine
-this picture for a long time but unable to find anything in it. At this point i
-stuck big time! Run a lot of scans and fuzzers but unable to find anything. So i
-was force to look of walkthrough of someone to get some type of joker. Quikly i 
-see other dudes able to find talisman file after fuzzed the target. That's 
-strange because I run dirbuster with alot of dictonaries, but that didn't work 
-for me. Look like dirbuster didn't work. So after I already know what to look 
-for I quickly switch to wfuzz using same dictonary as in dirbuster but wfuzz
-found what I searched:
-<img alt="" src="images/Necromancer/7_wfuzz_found_talisman.png" />
-We found talisman :) At first it's look like binary file. Stucked again! So i
-decide to go to sleep and fight tomorrow witch a fresh head.</p>                </article>
-            </aside><!-- /#featured -->
-                <section id="content" class="body">
-                    <h1>Other articles</h1>
-                    <ol id="posts-list" class="hfeed">
-
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="/mr-robot-ctf.html" rel="bookmark"
-                           title="Permalink to Mr Robot CTF">Mr Robot CTF</a></h1>
-                </header>
-
-                <div class="entry-content">
+                    <h1 class="entry-title"><a href="/mr-robot-ctf.html">Mr Robot CTF</a></h1>
 <footer class="post-info">
         <span>Wed 13 July 2016</span>
 
-</footer><!-- /.post-info -->                <p><strong>This is a Mr.Robot challenge from vulnhub.com. You can obtain the virtual machine from:
+</footer><!-- /.post-info --><p><strong>This is a Mr.Robot challenge from vulnhub.com. You can obtain the virtual machine from:
 <a href="https://www.vulnhub.com/entry/mr-robot-1,151/">here</a></strong></p>
 <p>First lets find the target in our network:</p>
 <p><img alt="netdiscover target" src="images/1_netdiscover.png" /></p>
 <p>Our target machine is 10.0.0.135, lets run nmap scan on it:</p>
 <p><img alt="nmap scan target" src="images/2_nmap.png" /></p>
 <p>Nothing interesting just web server, and close ssh port 22.
-Browse ...</p>
-                <a class="readmore" href="/mr-robot-ctf.html">read more</a>
-                </div><!-- /.entry-content -->
-            </article></li>
-            </ol><!-- /#posts-list -->
+Browse the target and run nikto on the web server.</p>
+<p><img alt="nikto scan target" src="images/3_nikto.png" />
+The site is wordpress. The interesting things are in red.</p>
+<p>Spidering the site from Owasp Zap and found robots.txt:</p>
+<p><img alt="robots.txt on target" src="images/4_robots_txt.png" /></p>
+<p>We are able to locate the first of three keys :)</p>
+<p><img alt="first key is found" src="images/5_first_key.png" /></p>
+<p>Exploring after nikto scan, and in license.txt we found some encrypt text,
+thanks to firebug. The text was hidden on the bottom of the page after long
+blank space.</p>
+<p><img alt="found encrypted text" src="images/6_license_txt_key.png" /></p>
+<p>Run the encrypted text through HashID but I can't determine it's type. Then I 
+decide to try it in Owasp Zap, and decrypt it as base64:</p>
+<p><img alt="zap decrypt txt" src="images/7_zap_decode_hash.png" /></p>
+<p>This is the username:password. I tried to log in with this credentials and
+this is the result:</p>
+<p><img alt="" src="images/8_in_the_wp.png" /></p>
+<p>We are successfully log in to the admin panel. Now I think about how to upload
+reverse shell. We know that WordPress is Php based, so I decide to upload php
+reverse shell in the footer of the theme:</p>
+<p><img alt="" src="images/9_upload_shell.png" /></p>
+<p>Catching the reverse shell with ncat and we are daemon on the target machine:</p>
+<p><img alt="" src="images/10_catch_reverse_shell.png" /></p>
+<p>After looking around I locate the second key. But we weren't able to read it
+because of permissions.</p>
+<p><img alt="" src="images/11_locate_second_key.png" /></p>
+<p>Let's try to crack the freshly found md5 hash. I didn't want to fire up John
+for this, so i ended up looking online at crackstation for decrypt it. The
+    password is the alphabet.</p>
+<p><img alt="" src="images/12_crack_md5.png" /></p>
+<p>Now I try to log in as SU but my shell didn't allow me to do that, perhaps i
+need to spawn /bin/bash:</p>
+<p><img alt="" src="images/13_cant_su.png" /></p>
+<p>So i upgrade the shell with this python script, and log in successfully as
+robot user:</p>
+<p><img alt="" src="images/14_upgrade_shell_with_py.png" /></p>
+<p>Now we can read the second key:</p>
+<p><img alt="" src="images/15_key2found.png" /></p>
+<p>I can't find the last key for now ... Probably i will need root access to the
+target machine, but for now didn't find a way to obtain it.</p>                </article>
 <p class="paginator">
     Page 1 / 1
 </p>
+            </aside><!-- /#featured -->
+            </ol><!-- /#posts-list -->
             </section><!-- /#content -->
         <section id="extras" class="body">
                 <div class="blogroll">
@@ -131,7 +93,7 @@ Browse ...</p>
 
                             <li><a href=""></a></li>
                             <li><a href="https://github.com/NikolaPavlov/">github</a></li>
-                            <li><a href="www.twitter.com/gggg">twitter</a></li>
+                            <li><a href="https://twitter.com/n_pavlov1955">twitter</a></li>
                         </ul>
                 </div><!-- /.social -->
         </section><!-- /#extras -->

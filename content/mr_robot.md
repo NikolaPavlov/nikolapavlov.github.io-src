@@ -1,6 +1,6 @@
 Title: Mr Robot CTF
 Date: 2016-07-13 11:00
-Category: CTF
+Category: VulnHub CTF
 
 
 **This is a Mr.Robot challenge from vulnhub.com. You can obtain the virtual machine from:
