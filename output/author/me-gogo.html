@@ -21,11 +21,108 @@
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="/necromancer.html">Necromancer</a></h1>
+                    <h1 class="entry-title"><a href="/tommyboy1.html">TommyBoy1</a></h1>
+<footer class="post-info">
+        <span>Fri 29 July 2016</span>
+
+</footer><!-- /.post-info --><p><strong>This is a TommyBoy1 challenge from vulnhub.com. You can obtain the virtual
+machine from: <a href="https://www.vulnhub.com/entry/tommy-boy-1,157/">here</a></strong></p>
+<blockquote>
+<p>'''
+The primary objective is to restore a backup copy of the homepage to Callahan 
+Auto's server. However, to consider the box fully pwned, you'll need to collect 
+5 flags strewn about the system, and use the data inside them to unlock one 
+final message.
+'''</p>
+</blockquote>
+<p>At first scanning the target with nmap:
+<img alt="" src="images/TommyPics/1_nmap.png" /></p>
+<p>Then version detection:
+<img alt="" src="images/TommyPics/1_1_nmap.png" /></p>
+<p>Strange thing... at first port 65534 was open now it's closed. I launch
+wireshark and start snooping the trafic to realize what happened. We have 22, 80
+and 8008 open so lets focus on that for now.
+At index page on the website on port 80 in the source we found this comments:
+<img alt="" src="images/TommyPics/1_3_comment_in_index_html.png" /></p>
+<p>From the comments we conclude:</p>
+<ul>
+<li>
+<p><strong>Nick</strong> is the administrator of the site</p>
+</li>
+<li>
+<p><strong>Richard</strong> is someone who wants admin access</p>
+</li>
+<li>
+<p>The backup of the site is in Big Tom's home folder</p>
+</li>
+<li>
+<p><strong>Tom</strong> share important information on the company blog</p>
+</li>
+<li>
+<p>The company blog is at <strong>/prehistoricforest</strong></p>
+</li>
+</ul>
+<p>The company blog is WP site. And one of the blog posts is password protected.
+The answer from the first post in the blog give as clue about /richard directory
+in which we found img file 'shockedrichard'. I tried to unlock the password
+protected post with 'richard', 'shockedrichard' etc. didn't work. This is what
+we found in the picture:
+<img alt="" src="images/TommyPics/5_found_hash_in_picture.png" /></p>
+<p>Decrypt the hash:
+<img alt="" src="images/TommyPics/6_decrypt_hash.png" /></p>
+<p>Then unlock the second post in which we found important info:</p>
+<ul>
+<li>
+<p>Another user Michelle</p>
+</li>
+<li>
+<p>Nick is the IT guy</p>
+</li>
+<li>
+<p>there is backup called <strong>callahanbak.bak</strong> that you can just rename to
+  index.html and everything will be good again. (You have to do this under Big Tom’s account via SSH to perform this restore)</p>
+</li>
+<li>
+<p>Big Tom's accontt shoud be found in the userlist (probably it's not called
+  bigtom)</p>
+</li>
+<li>
+<p>The home folder of Nick can be accesed via FTP, the port is the one we
+  found at the first scan with nmap (65534). The FTP server goes on/off every
+  15 minutes.</p>
+</li>
+<li>
+<p>Nick ftp account = <strong>nickburns</strong> (the password is very easy)</p>
+</li>
+<li>
+<p>Nick didn't have ssh access</p>
+</li>
+</ul>
+<p>From there I decide to try nick ftp account with hydra:
+<img alt="" src="images/TommyPics/8_hydra_brute.png" /></p>
+<p>In the ftp dir we found this readme.txt:
+<img alt="" src="images/TommyPics/9_ftp_readme.png" /></p>
+<ul>
+<li>There should be encrypted .zip file in 'NickIzL33t' contained Big Tom's passwords.
+The 'NickIzL33t' is at [target ip]:8008/NickIzL33t but there is nothing there so 
+lets scan the webserver. I used nikto, nessus and wpscan for that.</li>
+</ul>                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/necromancer.html" rel="bookmark"
+                           title="Permalink to Necromancer">Necromancer</a></h1>
+                </header>
+
+                <div class="entry-content">
 <footer class="post-info">
         <span>Thu 14 July 2016</span>
 
-</footer><!-- /.post-info --><p><strong>This is a Necromancer challenge from vulnhub.com. You can obtain the virtual
+</footer><!-- /.post-info -->                <p><strong>This is a Necromancer challenge from vulnhub.com. You can obtain the virtual
 machine from: <a href="https://www.vulnhub.com/entry/the-necromancer-1,154/">here</a></strong></p>
 <h1><strong><em>Day1</em></strong></h1>
 <p>We found our target with:</p>
@@ -38,143 +135,10 @@ machine from: <a href="https://www.vulnhub.com/entry/the-necromancer-1,154/">her
 </pre></div>
 
 
-<p>Didn't find anything so lets look for all ports:</p>
-<div class="highlight"><pre><span></span>nmap -sS -T5 -Pn -n -p- 10.0.0.137
-</pre></div>
-
-
-<p>There is no open TCP ports on the target. So let's look to the udp:</p>
-<div class="highlight"><pre><span></span>nmap -sU -T5 -Pn -n -p- 10.0.0.137
-</pre></div>
-
-
-<p>Only single 666(doom) Udp port open...</p>
-<p>So i try to connect to port 666 with ncat with no result... At this point i
-stuck a little bit :) but finally decide to listen for trafic from the target.
-Fire up wireshark and start sniffing. Found this interesting packets:
-<img alt="" src="images/Necromancer/0_find_connection_wireshark.png" /></p>
-<p>Lets catch incoming connection with ncat and see what will happen:
-<img alt="" src="images/Necromancer/1_ncat_catch_4444.png" /></p>
-<p>Got some jiberish string... I paste it in my Owasp Zap and able to decode it as
-base 64:
-<img alt="" src="images/Necromancer/2_decrypt_base64.png" /></p>
-<p>The full text is bellow:
-<img alt="" src="images/Necromancer/2_decrypt_base64_txt.png" />
-It's talk about send some string to the 666udp. After a while i ended up send
-decoded <strong>flag1{e6078b9b1aac915d11b9fd59791030bf}:(opensesame)</strong> to the Udp 666 on the target:
-<img alt="" src="images/Necromancer/3_send_flag1_to_666.png" /></p>
-<p>This is give as <strong>flag2{c39cd4df8f2e35d20d92c2e44de5f7c6}</strong> and said something about close 666 and open 80. So nmap
-confirm port 80 on the target is open it's time to browse the site.
-<img alt="" src="images/Necromancer/3_1_picture_on_site.png" />
-I scan with nikto, looking around with firebug and found nothing interesting. It
-should be something about the picture so i download it and look carefully on it.
-<img alt="" src="images/Necromancer/4_file_picture.png" /></p>
-<p><img alt="" src="images/Necromancer/5_strings_picture.png" /></p>
-<p><img alt="" src="images/Necromancer/5_1_binwalk_picture.png" />
-Looks like there is zip archive in the picture so after unzip the pic we recived
-feathers.txt contained base64 string. Decide to use my universal Zap to decode
-it and there is flag number 3 and some directory:
-<img alt="" src="images/Necromancer/6_decode_flag3_with_zap.png" />
-We found <strong>flag3{9ad3f62db7b91c28b68137000394639f}</strong> and dir <strong>/amagicbridgeappearsatthechasm</strong></p>
-<p>I explore the recently founded directory, there is a second picture. I examine
-this picture for a long time but unable to find anything in it. At this point i
-stuck big time! Run a lot of scans and fuzzers but unable to find anything. So i
-was force to look of walkthrough of someone to get some type of joker. Quikly i 
-see other dudes able to find talisman file after fuzzed the target. That's 
-strange because I run dirbuster with alot of dictonaries, but that didn't work 
-for me. Look like dirbuster didn't work. So after I already know what to look 
-for I quickly switch to wfuzz using same dictonary as in dirbuster but wfuzz
-found what I searched:
-<img alt="" src="images/Necromancer/7_wfuzz_found_talisman.png" />
-We found talisman :) At first it's look like binary file. Stucked again! So i
-decide to go to sleep and fight tomorrow witch a fresh head.</p>
-<h1><strong><em>Day2</em></strong></h1>
-<p>So after I sllep for a while I start fighting again on the next day with fresh 
-head. After half a day I'm ready to post how i got flag 4:
-This is the properties of talisman file:</p>
-<p><img alt="" src="images/Necromancer/7_1_talisman_prop.png" /></p>
-<p>To open the file on my attacking machine:</p>
-<div class="highlight"><pre><span></span>apt-get install lib32z1
-</pre></div>
-
-
-<p>so i can run this 32bit binary.</p>
-<p>After I left no stone unturned found this interesting functions in the file:
-<img alt="" src="images/Necromancer/7_2_talisman_functions.png" />
-Next i learn how to use gdb, i guess that's going to be useful in the future :)
-Confirm the file contains this two functions:
-<img alt="" src="images/Necromancer/8_gdb_debugging1.png" />
-Hithing the chantToBreakSpell function with the debugger:
-<img alt="" src="images/Necromancer/8_gdb_debugging_find_flag.png" />
-<strong>flag4{ea50536158db50247e110a6c89fcf3d3}:blackmagic</strong>
-With the flag4 we recieved instructions to send the decrypted flag4 to udp 
-31337:
-<img alt="" src="images/Necromancer/9_found_flag5.png" />
-We found <strong>flag5{0766c36577af58e15545f099a3b15e60}:809472671</strong> and directory
-/thenecromancerwillabsorbyoursoul let's visit it:
-<img alt="" src="images/Necromancer/10_found_flag6.png" />
-In the /thenecromancerwillabsorbyoursoul at the top of the page just like that
-we found  <strong>flag6{b1c3ed8f1db4258e4dcb0ce565f6dc03}:1756462165</strong>.And necromancer file. It's bzip2 file, after unzip it we ended up with pcap
-file. I look at the file with wireshark it's look like contains some type of
-wireless traffic. Look at the file for more than a hour and finally decide to take
-break and continue tomorrow. So this is the end of day two. I learned alot about
-how to decompile and debug binary files. I guess tomorrow will learn alot about
-wireless traffic :).</p>
-<h1><strong><em>Day3</em></strong></h1>
-<p>After a couple of days I'm back. Ready to bang my hand against the wall untill I
-died.</p>
-<h1><strong><em>Day4</em></strong></h1>
-<p>It's look like i died in day3 so back again... One more day wasted of my life.
-This is what i found in the pcap file:</p>
-<p>Wireless access point with ssid community:
-<img alt="" src="images/Necromancer/11_1_wireshark_found_wifi_ssid.png" /></p>
-<p>Also found this handshake in the file:
-<img alt="" src="images/Necromancer/11_2_found_handshake.png" /></p>
-<p>Decrypt the handshake with aircrack-ng</p>
-<div class="highlight"><pre><span></span>  aircrack-ng -w rockyou.txt necromancer.cap
-</pre></div>
-
-
-<p><img alt="" src="images/Necromancer/12_ncrack_decrypt_necro.png" /></p>
-<p>In the last web page we saw something about port 161:
-<img alt="" src="images/Necromancer/13_u161.png" /></p>
-<p>Snmp-enum port 161 with metasploit:
-<img alt="" src="images/Necromancer/14_snmp_enum.png" /></p>
-<p>This is the result from snmp-enum module:
-<img alt="" src="images/Necromancer/15_snmp_enum_results.png" /></p>
-<p>It's told as to unlock the door, so this is what I ended with:
-<img alt="" src="images/Necromancer/15_snmp_walk_results.png" />
-<img alt="" src="images/Necromancer/16_snmp_set.png" />
-<strong>flag7{9e5494108d10bbd5f9e7ae52239546c4}:demonslayer</strong> found! Finally!</p>
-<p>Now we focus on port 22 ssh, and realize that demonslayer is the user not the
-password:
-<img alt="" src="images/Necromancer/17_ncrack_ssh.png" /></p>
-<p>The credentials to ssh on the target are: demonslayer:12345678
-<img alt="" src="images/Necromancer/skull.png" />
-So at the bottom the silly history redirect as to udp 777. We connect to it from
-the target and enter even silly trivia with three hitpoints for every question. 
-(Things get really annoying there, founded the answers with google):
-<img alt="" src="images/Necromancer/19_f8_9_10.png" /></p>
-<p><strong>flag8{55a6af2ca3fee9f2fef81d20743bda2c}</strong></p>
-<p><strong>flag9{713587e17e796209d1df4c9c2c2d2966}</strong></p>
-<p><strong>flag10{8dc6486d2c63cafcdc6efbba2be98ee4}</strong></p>
-<p>Silly trivia end, our demonslayer user can execute command to cat the last
-flag:
-<img alt="" src="images/Necromancer/20_sudo_ll.png" /></p>
-<p>This is the end:
-<img alt="" src="images/Necromancer/21_last_flag.png" /></p>
-<p><strong>flag11{42c35828545b926e79a36493938ab1b1}</strong></p>
-<p>This VMs happend to be reall challenge for me and cost me four full days to
-complete it. I used help at one of the points where we do directory enumeration 
-because dirbuster missed the directory and I didn't run another tool at this
-point. After check other walkthroughs manage to find the directory with wfuzz.
-Binary file also eat me alive... So at the end I experienced the satisfaction to
-complete my first challenge to the end! Good luck everyone and if you read down
-to this point thank you for be with me!</p>                </article>
-            </aside><!-- /#featured -->
-                <section id="content" class="body">
-                    <h1>Other articles</h1>
-                    <ol id="posts-list" class="hfeed">
+<p>Didn't find anything so lets look ...</p>
+                <a class="readmore" href="/necromancer.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
 
             <li><article class="hentry">
                 <header>

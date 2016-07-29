@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
         <meta charset="utf-8" />
-        <title>InfoSec CTF - VulnHub CTF</title>
+        <title>TommyBoy1</title>
         <link rel="stylesheet" href="/theme/css/main.css" />
 
         <!--[if IE]>
@@ -18,14 +18,19 @@
                 </ul>
                 </nav>
         </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="/tommyboy1.html" rel="bookmark"
+           title="Permalink to TommyBoy1">TommyBoy1</a></h1>
+    </header>
 
-            <aside id="featured" class="body">
-                <article>
-                    <h1 class="entry-title"><a href="/tommyboy1.html">TommyBoy1</a></h1>
+    <div class="entry-content">
 <footer class="post-info">
         <span>Fri 29 July 2016</span>
 
-</footer><!-- /.post-info --><p><strong>This is a TommyBoy1 challenge from vulnhub.com. You can obtain the virtual
+</footer><!-- /.post-info -->      <p><strong>This is a TommyBoy1 challenge from vulnhub.com. You can obtain the virtual
 machine from: <a href="https://www.vulnhub.com/entry/tommy-boy-1,157/">here</a></strong></p>
 <blockquote>
 <p>'''
@@ -106,66 +111,11 @@ we found in the picture:
 <li>There should be encrypted .zip file in 'NickIzL33t' contained Big Tom's passwords.
 The 'NickIzL33t' is at [target ip]:8008/NickIzL33t but there is nothing there so 
 lets scan the webserver. I used nikto, nessus and wpscan for that.</li>
-</ul>                </article>
-            </aside><!-- /#featured -->
-                <section id="content" class="body">
-                    <h1>Other articles</h1>
-                    <ol id="posts-list" class="hfeed">
+</ul>
+    </div><!-- /.entry-content -->
 
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="/necromancer.html" rel="bookmark"
-                           title="Permalink to Necromancer">Necromancer</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <span>Thu 14 July 2016</span>
-
-</footer><!-- /.post-info -->                <p><strong>This is a Necromancer challenge from vulnhub.com. You can obtain the virtual
-machine from: <a href="https://www.vulnhub.com/entry/the-necromancer-1,154/">here</a></strong></p>
-<h1><strong><em>Day1</em></strong></h1>
-<p>We found our target with:</p>
-<div class="highlight"><pre><span></span>netdiscover -r 10.0.0.1/24
-</pre></div>
-
-
-<p>As usual scan the target:</p>
-<div class="highlight"><pre><span></span>nmap -sS -T5 -Pn -n 10.0.0.137
-</pre></div>
-
-
-<p>Didn't find anything so lets look ...</p>
-                <a class="readmore" href="/necromancer.html">read more</a>
-                </div><!-- /.entry-content -->
-            </article></li>
-
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="/mr-robot-ctf.html" rel="bookmark"
-                           title="Permalink to Mr Robot CTF">Mr Robot CTF</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <span>Wed 13 July 2016</span>
-
-</footer><!-- /.post-info -->                <p><strong>This is a Mr.Robot challenge from vulnhub.com. You can obtain the virtual machine from:
-<a href="https://www.vulnhub.com/entry/mr-robot-1,151/">here</a></strong></p>
-<p>First lets find the target in our network:</p>
-<p><img alt="netdiscover target" src="images/1_netdiscover.png" /></p>
-<p>Our target machine is 10.0.0.135, lets run nmap scan on it:</p>
-<p><img alt="nmap scan target" src="images/2_nmap.png" /></p>
-<p>Nothing interesting just web server, and close ssh port 22.
-Browse ...</p>
-                <a class="readmore" href="/mr-robot-ctf.html">read more</a>
-                </div><!-- /.entry-content -->
-            </article></li>
-            </ol><!-- /#posts-list -->
-<p class="paginator">
-    Page 1 / 1
-</p>
-            </section><!-- /#content -->
+  </article>
+</section>
         <section id="extras" class="body">
                 <div class="blogroll">
                         <h2>blogroll</h2>
