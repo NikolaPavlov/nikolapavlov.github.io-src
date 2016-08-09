@@ -13,15 +13,18 @@ machine from: [here](https://www.vulnhub.com/entry/tommy-boy-1,157/)**
 > '''
 
 At first scanning the target with nmap:
+
 ![](images/TommyPics/1_nmap.png)
 
 Then version detection:
+
 ![](images/TommyPics/1_1_nmap.png)
 
 Strange thing... at first port 65534 was open now it's closed. I launch
 wireshark and start snooping the trafic to realize what happened. We have 22, 80
 and 8008 open so lets focus on that for now.
 At index page on the website on port 80 in the source we found this comments:
+
 ![](images/TommyPics/1_3_comment_in_index_html.png)
 
 From the comments we conclude:
@@ -36,14 +39,28 @@ From the comments we conclude:
 
 - The company blog is at **/prehistoricforest**
 
+
+After running nikto, nessus and dirbuster on the target web site the most interesting thing we found was robots.txt in which we found the **first flag B34rcl4ws**
+
+In the company blog we fond the seccond flag:
+
+![](images/TommyPics/flag_2.png)
+
+![](images/TommyPics/flag_2_view.png)
+
+**second flag Z4l1nsky**
+
+
 The company blog is WP site. And one of the blog posts is password protected.
 The answer from the first post in the blog give as clue about /richard directory
 in which we found img file 'shockedrichard'. I tried to unlock the password
 protected post with 'richard', 'shockedrichard' etc. didn't work. This is what
 we found in the picture:
+
 ![](images/TommyPics/5_found_hash_in_picture.png)
 
 Decrypt the hash:
+
 ![](images/TommyPics/6_decrypt_hash.png)
 
 Then unlock the second post in which we found important info:
@@ -67,9 +84,11 @@ Then unlock the second post in which we found important info:
 - Nick didn't have ssh access
 
 From there I decide to try nick ftp account with hydra:
+
 ![](images/TommyPics/8_hydra_brute.png)
 
 In the ftp dir we found this readme.txt:
+
 ![](images/TommyPics/9_ftp_readme.png)
 
 - There should be encrypted .zip file in 'NickIzL33yt' contained Big Tom's passwords.
@@ -77,18 +96,26 @@ The 'NickIzL33t' is at [target ip]:8008/NickIzL33t but there is nothing there so
 lets scan the webserver. I used nikto, nessus and wpscan for that.
 
 This is what we found in the NickIzL33t directory:
+
 ![](images/TommyPics/10_dropbox_dir_html.png)
 
+
+
+
 And the web page return 403 Forbidden response:
+
 ![](images/TommyPics/11_forbidden_403.png)
 
 6 hours letter... Lets change the user agent to apple's.
+
 ![](images/TommyPics/12_changed_ua.png)
+
 ![](images/TommyPics/13_resp.png)
 
-We shoud use apple User-Agents. We should think about this earlier, after all
+We should think about this earlier, after all
 only "Nick and Steve Jobs can see this content"
 When we open the NickIzL33t dropbox dir with apple UA this is the result:
+
 ![](images/TommyPics/14_pass_dummy_test.png)
 
 It's time to bruteforce... Dirbuster give me some errors, because of url
@@ -99,6 +126,7 @@ wfuzz -c -v -w ~/Downloads/Wordlists/rockyou_max9len.txt -H "User-Agent:Mozilla/
 ```
 
 We found the dropbox files:
+
 ![](images/TommyPics/15_dropbox_found.png)
 <!-- TODO:flag3 -->
 **Third flag found: Flag data: TinyHead**
@@ -132,9 +160,13 @@ with open(output_file, 'w') as f:
    for str in generated_strings:
       f.write(str + '\n')
 ```
+
+Use fcrack to crack the zip file with our freshly generated wordlist:
+
 ![](images/TommyPics/16_fcrack.png)
 
 This is the content of the zip password protected file:
+
 ![](images/TommyPics/17_passes_open.png)
 
 - The password for Callahan Auto Server isn't complete, there is more numbers at
@@ -146,6 +178,7 @@ At this point we can generate another password list with fatguyinalittlecoat and
 numbers at the end and try to bruteforce the ssh account on the target. But we
 could also look at the blog more carfully. Lets enumerate users on the company
 blog:
+
 ![](images/TommyPics/18_enumerate.png)
 
 It's look like the account which we need is 'tom' so lets bruteforce the
@@ -158,15 +191,67 @@ wpscan --username tom --wordlist ~/Downloads/Wordlists/rockyou.txt --url http://
 ![](images/TommyPics/19_wp_login_found.png)
 
 On the wordpress panel this is what we found:
+
 ![](images/TommyPics/20_tom_panel.png)
 
 It's look like the password is **fatguyinalittlecoat1938!!**
 Lets try to ssh with **bigtommysenior:fatguyinalittlecoat1938!!**
 
 ![](images/TommyPics/21_ssh_in.png)
+
 wot wot !!! :) 
 **Four flag found: Flag data: EditButton**
 
 In the flag four we obtained important information:
 >But...but...where's flag 5?  
 >I'll make it easy on you.  It's in the root of this server at /5.txt
+
+In our home directory we found the backup. Now we can complete our primary
+target to bring the website back online follow the instructions from the
+locked blog post in the company blog:
+
+![](images/TommyPics/22_backup_restore.png)
+
+And the site is online:
+
+![](images/TommyPics/23_online_site.png)
+
+Now lets find all world writeable files and directories (aka 777):
+
+![](images/TommyPics/24_find_777.png)
+
+This is become our target:
+```
+/var/thatsg0nnaleaveamark/NickIzL33t/P4TCH_4D4MS/uploads
+```
+Our plan is to upload php reverse shell as *img file to the server, then
+rename it to *php and execute it from the web browser.
+
+- uplad the fake img
+
+![](images/TommyPics/25_upload_shell.png)
+
+- rename the file from the server
+
+![](images/TommyPics/26_rename_shell.png)
+
+- catch the reverse shell from our attacker machine
+
+![](images/TommyPics/27_www-data-access.png)
+
+- cat the content of flag 6
+
+![](images/TommyPics/28_flag_5.png)
+
+**flag five Buttcrack**
+
+All flags together:
+**B34rcl4wsZ4l1nskyTinyHeadEditButtonButtcrack**
+
+With the assemble password we unlocked LOOT.ZIP:
+
+![](images/TommyPics/29_final_msg.png)
+
+Game Over! It was nice journey for me solving this vm (this time cost me around 3
+days). If You came all the way
+to the end with me Thank You for your attention! 

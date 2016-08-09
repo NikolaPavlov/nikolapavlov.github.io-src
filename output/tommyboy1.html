@@ -40,15 +40,15 @@ Auto's server. However, to consider the box fully pwned, you'll need to collect
 final message.
 '''</p>
 </blockquote>
-<p>At first scanning the target with nmap:
-<img alt="" src="images/TommyPics/1_nmap.png" /></p>
-<p>Then version detection:
-<img alt="" src="images/TommyPics/1_1_nmap.png" /></p>
+<p>At first scanning the target with nmap:</p>
+<p><img alt="" src="images/TommyPics/1_nmap.png" /></p>
+<p>Then version detection:</p>
+<p><img alt="" src="images/TommyPics/1_1_nmap.png" /></p>
 <p>Strange thing... at first port 65534 was open now it's closed. I launch
 wireshark and start snooping the trafic to realize what happened. We have 22, 80
 and 8008 open so lets focus on that for now.
-At index page on the website on port 80 in the source we found this comments:
-<img alt="" src="images/TommyPics/1_3_comment_in_index_html.png" /></p>
+At index page on the website on port 80 in the source we found this comments:</p>
+<p><img alt="" src="images/TommyPics/1_3_comment_in_index_html.png" /></p>
 <p>From the comments we conclude:</p>
 <ul>
 <li>
@@ -67,14 +67,19 @@ At index page on the website on port 80 in the source we found this comments:
 <p>The company blog is at <strong>/prehistoricforest</strong></p>
 </li>
 </ul>
+<p>After running nikto, nessus and dirbuster on the target web site the most interesting thing we found was robots.txt in which we found the <strong>first flag B34rcl4ws</strong></p>
+<p>In the company blog we fond the seccond flag:</p>
+<p><img alt="" src="images/TommyPics/flag_2.png" /></p>
+<p><img alt="" src="images/TommyPics/flag_2_view.png" /></p>
+<p><strong>second flag Z4l1nsky</strong></p>
 <p>The company blog is WP site. And one of the blog posts is password protected.
 The answer from the first post in the blog give as clue about /richard directory
 in which we found img file 'shockedrichard'. I tried to unlock the password
 protected post with 'richard', 'shockedrichard' etc. didn't work. This is what
-we found in the picture:
-<img alt="" src="images/TommyPics/5_found_hash_in_picture.png" /></p>
-<p>Decrypt the hash:
-<img alt="" src="images/TommyPics/6_decrypt_hash.png" /></p>
+we found in the picture:</p>
+<p><img alt="" src="images/TommyPics/5_found_hash_in_picture.png" /></p>
+<p>Decrypt the hash:</p>
+<p><img alt="" src="images/TommyPics/6_decrypt_hash.png" /></p>
 <p>Then unlock the second post in which we found important info:</p>
 <ul>
 <li>
@@ -103,34 +108,34 @@ we found in the picture:
 <p>Nick didn't have ssh access</p>
 </li>
 </ul>
-<p>From there I decide to try nick ftp account with hydra:
-<img alt="" src="images/TommyPics/8_hydra_brute.png" /></p>
-<p>In the ftp dir we found this readme.txt:
-<img alt="" src="images/TommyPics/9_ftp_readme.png" /></p>
+<p>From there I decide to try nick ftp account with hydra:</p>
+<p><img alt="" src="images/TommyPics/8_hydra_brute.png" /></p>
+<p>In the ftp dir we found this readme.txt:</p>
+<p><img alt="" src="images/TommyPics/9_ftp_readme.png" /></p>
 <ul>
 <li>There should be encrypted .zip file in 'NickIzL33yt' contained Big Tom's passwords.
 The 'NickIzL33t' is at [target ip]:8008/NickIzL33t but there is nothing there so 
 lets scan the webserver. I used nikto, nessus and wpscan for that.</li>
 </ul>
-<p>This is what we found in the NickIzL33t directory:
-<img alt="" src="images/TommyPics/10_dropbox_dir_html.png" /></p>
-<p>And the web page return 403 Forbidden response:
-<img alt="" src="images/TommyPics/11_forbidden_403.png" /></p>
-<p>6 hours letter... Lets change the user agent to apple's.
-<img alt="" src="images/TommyPics/12_changed_ua.png" />
-<img alt="" src="images/TommyPics/13_resp.png" /></p>
-<p>We shoud use apple User-Agents. We should think about this earlier, after all
+<p>This is what we found in the NickIzL33t directory:</p>
+<p><img alt="" src="images/TommyPics/10_dropbox_dir_html.png" /></p>
+<p>And the web page return 403 Forbidden response:</p>
+<p><img alt="" src="images/TommyPics/11_forbidden_403.png" /></p>
+<p>6 hours letter... Lets change the user agent to apple's.</p>
+<p><img alt="" src="images/TommyPics/12_changed_ua.png" /></p>
+<p><img alt="" src="images/TommyPics/13_resp.png" /></p>
+<p>We should think about this earlier, after all
 only "Nick and Steve Jobs can see this content"
-When we open the NickIzL33t dropbox dir with apple UA this is the result:
-<img alt="" src="images/TommyPics/14_pass_dummy_test.png" /></p>
+When we open the NickIzL33t dropbox dir with apple UA this is the result:</p>
+<p><img alt="" src="images/TommyPics/14_pass_dummy_test.png" /></p>
 <p>It's time to bruteforce... Dirbuster give me some errors, because of url
 encoding so I switch to wfuzz with:</p>
 <div class="highlight"><pre><span></span><span class="nt">wfuzz</span> <span class="nt">-c</span> <span class="nt">-v</span> <span class="nt">-w</span> <span class="o">~/</span><span class="nt">Downloads</span><span class="o">/</span><span class="nt">Wordlists</span><span class="o">/</span><span class="nt">rockyou_max9len</span><span class="nc">.txt</span> <span class="nt">-H</span> <span class="s2">&quot;User-Agent:Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_0 like Mac OS X; en-us) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8A293 Safari/6531.22.7&quot;</span> <span class="nt">--hc</span> <span class="nt">404</span> <span class="nt">http</span><span class="o">://</span><span class="nt">10</span><span class="nc">.0.0.139</span><span class="nd">:8008</span><span class="o">/</span><span class="nt">NickIzL33t</span><span class="o">/</span><span class="nt">FUZZ</span><span class="nc">.html</span>
 </pre></div>
 
 
-<p>We found the dropbox files:
-<img alt="" src="images/TommyPics/15_dropbox_found.png" />
+<p>We found the dropbox files:</p>
+<p><img alt="" src="images/TommyPics/15_dropbox_found.png" />
 <!-- TODO:flag3 -->
 <strong>Third flag found: Flag data: TinyHead</strong></p>
 <p>It's time to create custom dictonary with the hints from hint.txt</p>
@@ -169,9 +174,10 @@ encoding so I switch to wfuzz with:</p>
 </pre></div>
 
 
+<p>Use fcrack to crack the zip file with our freshly generated wordlist:</p>
 <p><img alt="" src="images/TommyPics/16_fcrack.png" /></p>
-<p>This is the content of the zip password protected file:
-<img alt="" src="images/TommyPics/17_passes_open.png" /></p>
+<p>This is the content of the zip password protected file:</p>
+<p><img alt="" src="images/TommyPics/17_passes_open.png" /></p>
 <ul>
 <li>
 <p>The password for Callahan Auto Server isn't complete, there is more numbers at
@@ -184,8 +190,8 @@ encoding so I switch to wfuzz with:</p>
 <p>At this point we can generate another password list with fatguyinalittlecoat and
 numbers at the end and try to bruteforce the ssh account on the target. But we
 could also look at the blog more carfully. Lets enumerate users on the company
-blog:
-<img alt="" src="images/TommyPics/18_enumerate.png" /></p>
+blog:</p>
+<p><img alt="" src="images/TommyPics/18_enumerate.png" /></p>
 <p>It's look like the account which we need is 'tom' so lets bruteforce the
 wordpress login of Big Tom.</p>
 <div class="highlight"><pre><span></span>wpscan --username tom --wordlist ~/Downloads/Wordlists/rockyou.txt --url http://10.0.0.139/prehistoricforest/
@@ -193,18 +199,57 @@ wordpress login of Big Tom.</p>
 
 
 <p><img alt="" src="images/TommyPics/19_wp_login_found.png" /></p>
-<p>On the wordpress panel this is what we found:
-<img alt="" src="images/TommyPics/20_tom_panel.png" /></p>
+<p>On the wordpress panel this is what we found:</p>
+<p><img alt="" src="images/TommyPics/20_tom_panel.png" /></p>
 <p>It's look like the password is <strong>fatguyinalittlecoat1938!!</strong>
 Lets try to ssh with <strong>bigtommysenior:fatguyinalittlecoat1938!!</strong></p>
-<p><img alt="" src="images/TommyPics/21_ssh_in.png" />
-wot wot !!! :) 
+<p><img alt="" src="images/TommyPics/21_ssh_in.png" /></p>
+<p>wot wot !!! :) 
 <strong>Four flag found: Flag data: EditButton</strong></p>
 <p>In the flag four we obtained important information:</p>
 <blockquote>
 <p>But...but...where's flag 5?<br />
 I'll make it easy on you.  It's in the root of this server at /5.txt</p>
 </blockquote>
+<p>In our home directory we found the backup. Now we can complete our primary
+target to bring the website back online follow the instructions from the
+locked blog post in the company blog:</p>
+<p><img alt="" src="images/TommyPics/22_backup_restore.png" /></p>
+<p>And the site is online:</p>
+<p><img alt="" src="images/TommyPics/23_online_site.png" /></p>
+<p>Now lets find all world writeable files and directories (aka 777):</p>
+<p><img alt="" src="images/TommyPics/24_find_777.png" /></p>
+<p>This is become our target:</p>
+<div class="highlight"><pre><span></span>/var/thatsg0nnaleaveamark/NickIzL33t/P4TCH_4D4MS/uploads
+</pre></div>
+
+
+<p>Our plan is to upload php reverse shell as <em>img file to the server, then
+rename it to </em>php and execute it from the web browser.</p>
+<ul>
+<li>uplad the fake img</li>
+</ul>
+<p><img alt="" src="images/TommyPics/25_upload_shell.png" /></p>
+<ul>
+<li>rename the file from the server</li>
+</ul>
+<p><img alt="" src="images/TommyPics/26_rename_shell.png" /></p>
+<ul>
+<li>catch the reverse shell from our attacker machine</li>
+</ul>
+<p><img alt="" src="images/TommyPics/27_www-data-access.png" /></p>
+<ul>
+<li>cat the content of flag 6</li>
+</ul>
+<p><img alt="" src="images/TommyPics/28_flag_5.png" /></p>
+<p><strong>flag five Buttcrack</strong></p>
+<p>All flags together:
+<strong>B34rcl4wsZ4l1nskyTinyHeadEditButtonButtcrack</strong></p>
+<p>With the assemble password we unlocked LOOT.ZIP:</p>
+<p><img alt="" src="images/TommyPics/29_final_msg.png" /></p>
+<p>Game Over! It was nice journey for me solving this vm (this time cost me around 3
+days). If You came all the way
+to the end with me Thank You for your attention! </p>
     </div><!-- /.entry-content -->
 
   </article>
