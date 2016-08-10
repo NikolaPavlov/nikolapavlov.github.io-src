@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
         <meta charset="utf-8" />
-        <title>InfoSec CTF</title>
+        <title>Stapler</title>
         <link rel="stylesheet" href="/theme/css/main.css" />
 
         <!--[if IE]>
@@ -14,23 +14,37 @@
         <header id="banner" class="body">
                 <h1><a href="/">InfoSec CTF </a></h1>
                 <nav><ul>
-                    <li><a href="/category/vulnhub-ctf.html">VulnHub CTF</a></li>
+                    <li class="active"><a href="/category/vulnhub-ctf.html">VulnHub CTF</a></li>
                 </ul>
                 </nav>
         </header><!-- /#banner -->
 <section id="content" class="body">
-<h1>Archives for InfoSec CTF</h1>
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="/stapler.html" rel="bookmark"
+           title="Permalink to Stapler">Stapler</a></h1>
+    </header>
 
-<dl>
-    <dt>Wed 10 August 2016</dt>
-    <dd><a href="/stapler.html">Stapler</a></dd>
-    <dt>Fri 29 July 2016</dt>
-    <dd><a href="/tommyboy1.html">TommyBoy1</a></dd>
-    <dt>Thu 14 July 2016</dt>
-    <dd><a href="/necromancer.html">Necromancer</a></dd>
-    <dt>Wed 13 July 2016</dt>
-    <dd><a href="/mr-robot-ctf.html">Mr Robot CTF</a></dd>
-</dl>
+    <div class="entry-content">
+<footer class="post-info">
+        <span>Wed 10 August 2016</span>
+
+</footer><!-- /.post-info -->      <p><strong>This is a Stapler challenge from vulnhub.com. You can obtain the virtual
+machine from: <a href="https://www.vulnhub.com/entry/stapler-1,150/">here</a></strong></p>
+<p>'''
+The primary object is to got root.
+'''</p>
+<p>Our nmap scan:</p>
+<p><img alt="" src="images/StaplerPics/1_nmap.png" /></p>
+<p>After running nmap script scan with -A switch:</p>
+<ul>
+<li>Ftp Anon login allowed
+<img alt="" src="images/StaplerPics/2_ftp_anon.png" /></li>
+</ul>
+    </div><!-- /.entry-content -->
+
+  </article>
 </section>
         <section id="extras" class="body">
                 <div class="blogroll">
