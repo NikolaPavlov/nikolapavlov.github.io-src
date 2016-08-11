@@ -38,10 +38,55 @@ The primary object is to got root.
 <p>Our nmap scan:</p>
 <p><img alt="" src="images/StaplerPics/1_nmap.png" /></p>
 <p>After running nmap script scan with -A switch:</p>
+<div class="highlight"><pre><span></span>nmap -A -T4 -p- 10.0.0.142
+</pre></div>
+
+
 <ul>
 <li>Ftp Anon login allowed
 <img alt="" src="images/StaplerPics/2_ftp_anon.png" /></li>
 </ul>
+<p>Base on what we found on the ftp we were able to enumerate these usernames:</p>
+<ul>
+<li>Harry</li>
+<li>Elly</li>
+</ul>
+<p>port 12380 turn out to be web server:</p>
+<p><img alt="" src="images/StaplerPics/3_12380.png" /></p>
+<p>Another username:</p>
+<ul>
+<li>Tim</li>
+</ul>
+<p>Scanning the web server:</p>
+<p><img alt="" src="images/StaplerPics/4_nikto_gimp.png" /></p>
+<p><img alt="" src="images/StaplerPics/5_dirb_http.png" /></p>
+<p><img alt="" src="images/StaplerPics/5_dirb_https.png" /></p>
+<p>It's look like the webserver on port 12380 serve http and https both on port
+12380.From the robots.txt we found beef hook at admin112233 :D and what's look
+like wordpress blog.</p>
+<p>This is the results from the scans with wpscan:</p>
+<p>Plugins enumeration:
+<img alt="" src="images/StaplerPics/6_wpscan_enumerate_p.png" /></p>
+<p>and usernames enumeration:
+<img alt="" src="images/StaplerPics/6_wpscan_enumerate_u.png" /></p>
+<p>Advanced video plugin is vulnerable to LFI.
+<img alt="" src="images/StaplerPics/7_vulnerable_adv_vid.png" /></p>
+<p>This is the link to the available exploit: <a href="https://www.exploit-db.com/exploits/39646/">exploit-db</a></p>
+<p>It's look like we could read the content of wp-config.
+We were able to post on the blog with entering this url:</p>
+<div class="highlight"><pre><span></span> https://10.0.0.142:12380/blogblog//wp-admin/admin-ajax.php?action=ave_publishPost&amp;title=RANDOMSTR&amp;short=rnd&amp;term=rnd&amp;thumb=../wp-config.php   
+</pre></div>
+
+
+<p>This created new post on the blog for us:</p>
+<p><img alt="" src="images/StaplerPics/8_post_created.png" /></p>
+<p>This is where the post was created:</p>
+<p><img alt="" src="images/StaplerPics/9_locate_LFI.png" /></p>
+<p>This image probably contain the content of wp-config.php.</p>
+<p><img alt="" src="images/StaplerPics/10_img_error.png" /></p>
+<p>So to be able to read the content lets download it with curl:</p>
+<p><img alt="" src="images/StaplerPics/11_wp_conf_dl.png" /></p>
+<p>MYSQL credentials: <strong>root:plbkac</strong></p>
     </div><!-- /.entry-content -->
 
   </article>
