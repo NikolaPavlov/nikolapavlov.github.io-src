@@ -35,7 +35,7 @@ machine from: <a href="https://www.vulnhub.com/entry/pwnlab-init,158/o">here</a>
 <p>'''
 The target is flag: /root/flag.txt
 '''</p>
-<p>Target discovery:</p>
+<p>Target machine discovery:</p>
 <p><img alt="" src="images/PwnLab/1_host_discovery.png" /></p>
 <p>This is what we've got when browse the web server:</p>
 <p><img alt="" src="images/PwnLab/2_web.png" /></p>
@@ -51,14 +51,14 @@ me <a href="https://highon.coffee/blog/lfi-cheat-sheet/">link</a></p>
 </pre></div>
 
 
-<p>We coudn't able to read the passwd file but we know there is config.php and got
-it's content with this request:</p>
+<p>We coudn't able to read the passwd file but we know there is config.php (from 
+the nikto scan) and got it's content with this request:</p>
 <div class="highlight"><pre><span></span>http://10.0.0.141/?page=php://filter/convert.base64-encode/resource=config
 </pre></div>
 
 
 <p><img alt="" src="images/PwnLab/4_resp_base64.png" /></p>
-<p>This is the decoded content:</p>
+<p>This is the base64 decoded content:</p>
 <p><img alt="" src="images/PwnLab/5_decode.png" /></p>
 <p>So now we have the credentials for MySql database Users lets see what's there:</p>
 <div class="highlight"><pre><span></span>mysql -h 10.0.0.141 -u root -p Users
@@ -68,7 +68,7 @@ it's content with this request:</p>
 <p><img alt="" src="images/PwnLab/6_mysql.png" /></p>
 <p>The Users database happend to be base64 encode which is great news for as. After
 easily decode the hashes(using owasp zap module) we logged as mike and got us 
-redirect to upload page. After we're logged in the plan is somehow to obtain
+redirect to upload page. After we're logged in the plan is to obtain
 shell to the system.</p>
 <p>There is some type of filter mechanism in place on uplad page allowed us to
 upload only images:</p>
@@ -82,7 +82,72 @@ entirely(filename.gif) and add GIF89A in the beggining of the file:</p>
 <p><img alt="" src="images/PwnLab/9_pic_uploaded.png" /></p>
 <p>So now we have our reverse php shell as *.gif file in 
 upload/364c09c54bad2c9b2e056dcfdab5e406.gif
-We have to find a way to execute it as php.</p>
+We have to find a way to execute it as php.
+We got the source code of the index page through our previous exploit:</p>
+<div class="highlight"><pre><span></span> http://10.0.0.141/?page=php://filter/convert.base64-encode/resource=indexhttp://10.0.0.141/?page=php://filter/convert.base64-encode/resource=index  
+</pre></div>
+
+
+<p>And there found unimplement function about the language of the page.</p>
+<p><img alt="" src="images/PwnLab/10_index.png" /></p>
+<div class="highlight"><pre><span></span><span class="x">if (isset(</span><span class="p">$</span><span class="nv">_COOKIE</span><span class="x">[&#39;lang&#39;]))</span>
+<span class="err">{</span><span class="x"></span>
+<span class="x">    include(&quot;lang/&quot;.</span><span class="p">$</span><span class="nv">_COOKIE</span><span class="x">[&#39;lang&#39;]);</span>
+<span class="x">}</span>
+</pre></div>
+
+
+<p>So the lang param in the cookie is included. We will use this lang cookie param
+to execute our gif reverse shell. This is the manual crafted request to the
+target web server with cookie lang=../(our php shell location) and on the left
+we are ready to catch the reverse php shell from the our attacker machine with
+net cat.</p>
+<p><img alt="" src="images/PwnLab/11_reverse.png" /></p>
+<p>Upgrade the catched shell through python:</p>
+<p><img alt="" src="images/PwnLab/12_upgrade_shell.png" /></p>
+<p>We tried our 3 logins from the MySql Users table and able to log in with 
+kent:JWzXuBJJNy and kane:iSv5Ym2GRo. In the home folder of kane we found msgmike 
+file with SuID set and owner of the file 'mike'. So we can execute msgmike file 
+as our current user(kane) with the rights of user mike (this is the suid linux 
+concept). </p>
+<p><img alt="" src="images/PwnLab/13_msgmike.png" /></p>
+<p>Strings command on the msgmike file:</p>
+<p><img alt="" src="images/PwnLab/14_strings.png" /></p>
+<p>So the file when it's executed tried to cat the content of /home/mike/msg.txt.
+The plan here is to replace the cat command with our crafted one, added the
+malicious command to the linux $PATH variable so it will be execute first and
+instead of cat the content as typical cat command do it will spawn /bin/bash (with
+the rights of the user mike)</p>
+<p><img alt="" src="images/PwnLab/15_change_mike.png" /></p>
+<p>At the previous screenshot we do:
+- create file with name cat in /tmp
+- change mode of /tmp/cat to 777 all executable :D
+- add /tmp on top of the $PATH variable (linux will search in /tmp first and
+  there it will find our malicious cat command)
+- execute ./msgmike</p>
+<p>Now we are logged as mike. This is the content of /home/mike:</p>
+<p><img alt="" src="images/PwnLab/16_mike_home.png" /></p>
+<p>Again binary file with set suid with the owner root. 
+This is strings command on the file:</p>
+<p><img alt="" src="images/PwnLab/17_msg2root.png" /></p>
+<p>This is the interesting part:</p>
+<div class="highlight"><pre><span></span>/bin/echo %s &gt;&gt; /root/messages.txt
+</pre></div>
+
+
+<p>The msg2root file when it's executed promp us to enter msg. This msg will be 
+echo to the /root/messages.txt file.</p>
+<p>We forget to remove /tmp from the $PATH lets do it:</p>
+<p><img alt="" src="/images/PwnLab/18_remove_tmp.png" /></p>
+<p>Now we have typical linux cat command again. The input of the msg2root binary
+isn't sanitize properly so we are able to do command injection:</p>
+<p><img alt="" src="/images/PwnLab/19_final.png" /></p>
+<p>They said this challenge will be easy it's cost me around 20 hours but I was
+very satisfied when finally finish it. It was nice journey thank you to vulnhub
+and the author of this vm. The tricky parts are to find first LFI vulnerability
+in the php, then to find a way to upload php reverse shell as img and execute it,
+then to exploit set suid on the file to escalate your privelege to the owner of 
+the file, then to find the command injection in the last binary.</p>
     </div><!-- /.entry-content -->
 
   </article>
