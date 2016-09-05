@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
         <meta charset="utf-8" />
-        <title>InfoSec CTF - Authors</title>
+        <title>6DaysLab</title>
         <link rel="stylesheet" href="/theme/css/main.css" />
 
         <!--[if IE]>
@@ -14,15 +14,46 @@
         <header id="banner" class="body">
                 <h1><a href="/">InfoSec CTF </a></h1>
                 <nav><ul>
-                    <li><a href="/category/vulnhub-ctf.html">VulnHub CTF</a></li>
+                    <li class="active"><a href="/category/vulnhub-ctf.html">VulnHub CTF</a></li>
                 </ul>
                 </nav>
         </header><!-- /#banner -->
-
 <section id="content" class="body">
-    <h1>Authors on InfoSec CTF</h1>        <li><a href="/author/me-gogo.html">me gogo</a> (6)</li>
-</section>
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="/6dayslab.html" rel="bookmark"
+           title="Permalink to 6DaysLab">6DaysLab</a></h1>
+    </header>
 
+    <div class="entry-content">
+<footer class="post-info">
+        <span>Thu 01 September 2016</span>
+
+</footer><!-- /.post-info -->      <p><strong>Boot2root machine for educational purposes
+Our first boot2root machine, execute /flag to complete the game.
+Try your skills against an environment protected by IDS and sandboxes!
+“Our product Rashomon IPS is so good, even we use it!” they claim.
+Hope you enjoy.</strong></p>
+<p>Our target at 10.0.0.143.
+Nmap scan:</p>
+<p><img alt="" src="images/6DaysLab/0_nmap.png" /></p>
+<p>Request the web server:</p>
+<p><img alt="" src="images/6DaysLab/01_web_server.png" /></p>
+<p>There is some type of difence on the form witch stop us to try SQLi, and there
+is external link to the picture. The picture is vulnerable to local file
+disclousere.</p>
+<p><img alt="" src="images/6DaysLab/1_lfi_passwd.png" /></p>
+<p>From nikto scan which we made early we knew there is config.php. Let's try to
+get it with curl:</p>
+<p><img alt="" src="images/6DaysLab/2_lfi_config.png" /></p>
+<p>And this is the script running the form when we enter the promocode:</p>
+<p><img alt="" src="images/6DaysLab/3_lfi_checkpromo.png" /></p>
+<p>The checkpromo.php script look vulnerable to SQLi.</p>
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
         <section id="extras" class="body">
                 <div class="blogroll">
                         <h2>blogroll</h2>
